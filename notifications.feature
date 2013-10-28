@@ -43,16 +43,3 @@ Feature: Notifications
     Given "Edward Foobin" as the persona
     When I visit "http://lightnet.is/messages/"
     Then I should see "Fred_Carpenter_1 has shared a comment with you!"
-
-  Scenario: Sharing a comment with another user
-    Given "Fred Carpenter" as the persona
-    When I visit "$item_1_url"
-    And I click the "share" link in the first comment
-    And I set "@Edward_Foobin_1" to the text of "share-recipients"
-    And I press "Share"
-    Then I should not see an element with id "share-recipients"
-    Given "Edward Foobin" as the persona
-    When I visit "http://lightnet.is/messages/"
-    Then I should see "Fred_Carpenter_1 has shared a link with you!"
-
-
