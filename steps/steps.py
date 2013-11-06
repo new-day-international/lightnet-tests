@@ -15,7 +15,9 @@ def step(context):
         username = name + "_1"
     )
     context.personas[name] = user
-    context.persona = context.personas[name]
+    context.execute_steps(u'''
+        Given "%s" as the persona
+    ''' % name)
 
 @given('I am logged in as the current persona')
 def step(context):
@@ -25,24 +27,18 @@ def step(context):
         When I fill in "#login_login-main input[name=passwd]" with "$password"
         When I press "login"
     ''')
-    if not context.browser.is_text_present("invalid password, real name ID, or email"):
-        return
+    if context.browser.is_text_present("invalid password, real name ID, or email"):
+        context.execute_steps(u'''
+            When I click the link with text "register"
+            When I fill in "user" with "$fullname"
+            When I fill in "email_reg" with "$email"
+            When I fill in "passwd_reg" with "$password"
+            When I fill in "passwd2_reg" with "$password"
+            When I press "create account"
+        ''')
     context.execute_steps(u'''
-        When I click the link with text "register"
-        When I fill in "user" with "$fullname"
-        When I fill in "email_reg" with "$email"
-        When I fill in "passwd_reg" with "$password"
-        When I fill in "passwd2_reg" with "$password"
-        When I press "create account"
-        Then I should see "$username"
+        Then I should be logged in
     ''')
-
-
-@given('I visit lightnet')
-def step(context):
-    context.execute_steps(u'''
-        When I visit "%s" 
-    ''' % context.base_url)
 
 @when('visiting google')
 def step(context):
@@ -60,6 +56,11 @@ def i_fill_in_field(context, field, value):
         context.browser.find_link_by_text(field) or \
         context.browser.find_link_by_partial_text(field)
     field.first.value = value
+
+@then(u'I save a screenshot to "{path}"')
+def step(context, path):
+    fullpath = os.path.join(context.screenshot_dir, path)
+    context.browser.driver.get_screenshot_as_file(fullpath)
   
 @then('its title should be "Google"')
 def step(context):
@@ -69,3 +70,15 @@ def step(context):
 @persona_vars
 def should_see(context, text):
     assert context.browser.is_text_present(text), u'Text not found'
+
+@then(u'I should be logged in')
+def step(context):
+    context.execute_steps(u'''
+     Then I should see an element with the css selector "body.loggedin .user" within 20 seconds
+        ''')
+
+@then(u'I should not be logged in')
+def set(context):
+    context.execute_steps(u'''
+     Then I should see an element with the css selector "#login_login-main" within 20 seconds
+        ''')
