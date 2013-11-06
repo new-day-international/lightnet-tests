@@ -16,8 +16,16 @@ Feature: Register
 	When I press "create account"
 	Then I should see "$username"
 
-  Scenario: I am Frank
+  Scenario: Login as user
   	Given "Frank" as the persona
 	Given I visit lightnet
 	Given I am logged in as the current persona
 	Then I should see "Frank_1"
+ 
+  @wip
+  Scenario: Logout as user
+    Given "Frank" as the persona
+    Given I visit lightnet
+    Given I am logged in as the current persona
+    When I click the link with text "logout"
+    Then I should not see "$username"
