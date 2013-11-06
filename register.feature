@@ -22,10 +22,21 @@ Feature: Register
 	Given I am logged in as the current persona
 	Then I should see "Frank_1"
  
-  @wip
   Scenario: Logout as user
     Given "Frank" as the persona
     Given I visit lightnet
     Given I am logged in as the current persona
     When I click the link with text "logout"
+    Then I should not see "$username"
+
+  @wip
+  Scenario: A user deletes themself
+    Given "Frank" as the persona
+    Given I visit lightnet
+    Given I am logged in as the current persona
+    When I click the link with text "preferences"
+    When I click the link with text "delete"
+    When I fill in "#delete_user" with "$username"
+    When I fill in "#delete_password" with "$password"
+    When I check "confirm"
     Then I should not see "$username"
