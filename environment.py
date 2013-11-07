@@ -26,16 +26,16 @@ def before_scenario(context, scenario):
     }
     context.step_counter = 0
 
-# def (context, step):
-#     context.step_counter += 1
-#     fullpath = os.path.join(context.screenshot_dir, context.scenario.name, "%s_%s.png" % (context.step_counter, step.name.replace("/","-")))
-#     if not os.path.exists(os.path.dirname(fullpath)):
-#         os.makedirs(os.path.dirname(fullpath))
-#     context.browser.driver.get_screenshot_as_file(fullpath)
+def after_step(context, step):
+    context.step_counter += 1
+    fullpath = os.path.join(context.screenshot_dir, context.scenario.name, "%s_%s.png" % (context.step_counter, step.name.replace("/","-")))
+    if not os.path.exists(os.path.dirname(fullpath)):
+        os.makedirs(os.path.dirname(fullpath))
+    context.browser.driver.get_screenshot_as_file(fullpath)
     
 
-#def after_scenario(context, scenario):
-#     if context.failed:
-#         fullpath = os.path.join(context.screenshot_dir, "failed_" + scenario.name + ".png")
-#         context.browser.driver.get_screenshot_as_file(fullpath)
-#     benv.after_scenario(context, scenario)
+def after_scenario(context, scenario):
+    if context.failed:
+        fullpath = os.path.join(context.screenshot_dir, "failed_" + scenario.name + ".png")
+        context.browser.driver.get_screenshot_as_file(fullpath)
+    benv.after_scenario(context, scenario)

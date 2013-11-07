@@ -44,6 +44,14 @@ def step(context):
 def step(context):
     context.browser.get('http://www.google.com')
 
+@when('I fill in "{field}" with the current timestamp')
+def step(context, field):
+    timestamp = str(time.strftime("%Y%j%H%M%S"))
+    context.execute_steps(u'''
+        When I fill in "%(field)s" with "%(timestamp)s"
+        ''' % locals())
+    context.space_name = timestamp
+
 @when('I fill in "{field}" with "{value}"')
 @persona_vars
 def i_fill_in_field(context, field, value):
@@ -61,10 +69,17 @@ def i_fill_in_field(context, field, value):
 def step(context, path):
     fullpath = os.path.join(context.screenshot_dir, path)
     context.browser.driver.get_screenshot_as_file(fullpath)
-  
-@then('its title should be "Google"')
+
+@then(u'the browser\'s url should contain the timestamp')
 def step(context):
-    assert context.browser.title == "Google"
+    context.execute_steps(u'''
+        Then the browser's URL should contain "%s"
+        ''' % context.space_name)
+
+@then(u'the browser\'s URL should contain "{text}"')
+@persona_vars
+def the_browser_url_should_contain(context, text):
+    assert text in context.browser.url, "I was looking for %r but I couldn't find it in %r" % (text, context.browser.url)
 
 @then(u'I should see "{text}"')
 @persona_vars
